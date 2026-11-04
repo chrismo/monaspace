@@ -1,13 +1,15 @@
 # Why this fork exists
 
-A personal fork to give Monaspace Argon a `?`, `$` and `&` that match its letters. It isn't
+A personal fork to give Monaspace Argon a `?`, `$`, `&` and `%` that match its
+letters. It isn't
 meant to go upstream and isn't a maintained font release.
 
 ## The problem
 
 Argon's letters have strong details: steep stroke endings, squarish curves, slab
 serifs on `i l f r j`. Its `?` looks like a generic sans `?` next to them, and its
-`$` and `&` have the same problem.
+`$` and `&` have the same problem. Its `%` is a separate problem: it's too light
+(see [What was tried](#what-was-tried)).
 
 ### Why it doesn't fit
 
@@ -98,9 +100,23 @@ the loop:
   one in this fork.** `&?` then mirror each other, with arms of about the same
   length opening in opposite directions.
 
+`%` has no open strokes, so its problem is weight, not stroke endings. At
+Black, upstream's slash is about 163 units across the stroke, against about 320
+for Argon's `/`. Its rings are plain ellipses that barely get heavier between
+wght 400 and 800. Three versions:
+
+- **A**, with the rings swapped for Argon's own fraction zeros (`zero.numr`,
+  `zero.dnom`) without their dot: Argon's squarish oval, but just as light.
+- **B**, A plus a slash as heavy as `/`: the heavy slash and thin rings
+  looked mismatched.
+- **C**, B with each ring's counter shrunk 20% to make it heavier: **this is
+  the one in this fork.** It keeps up with the letters at wght 800 and looks
+  like A at the lighter weights. The 20% is a judgment call, not taken from
+  another Argon glyph.
+
 ## What changed
 
-Eight glyphs in `sources/Variable Fonts/Monaspace Argon Var.glyphs`. In each of
+Twelve glyphs in `sources/Variable Fonts/Monaspace Argon Var.glyphs`. In each of
 the 8 masters (Light/Black × normal/Wide × upright/Italic):
 
 - `question` is built from that master's own `2` and `?`.
@@ -111,6 +127,9 @@ the 8 masters (Light/Black × normal/Wide × upright/Italic):
   their top loop. The variants are `.left`, `.right` and `.both` for texture
   healing, plus `.init` for the `&&` ligature in `ss06`. Texture healing picks
   among them by context, so all five need the change.
+- `percent` and its `.left`, `.right` and `.both` variants get rings from that
+  master's `zero.numr` and `zero.dnom` (no dot, counter shrunk 20%), and a
+  slash widened to that master's `/` weight.
 
 Building from each master's own glyphs keeps the masters compatible, so every
 weight, width and slant blends from them.
@@ -125,14 +144,14 @@ name alone for this personal experiment.
 python3 -I scripts/question-from-two.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 python3 -I scripts/dollar-from-s.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 python3 -I scripts/ampersand-from-s.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
+python3 -I scripts/percent-from-zero.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 scripts/build-argon.sh        # -> build/Monaspace Argon Var.ttf (~40s)
 ```
 
 - **Syncing upstream:** run `git fetch upstream && git merge upstream/main`. If the
   `.glyphs` file conflicts, take upstream's version and rerun
-  all three scripts. Only run `question-from-two.py` on upstream's `?`: a second
-  run reshapes it again. `dollar-from-s.py` and `ampersand-from-s.py` are safe
-  to rerun.
+  all four scripts. Only run `question-from-two.py` on upstream's `?`: a second
+  run reshapes it again. The other three are safe to rerun.
 - **Building:** `fontmake` fails on the untouched source because glyphsLib's
   default `eraseOpenCorners` filter makes `softsign-cy.both` incompatible across
   masters. `build-argon.sh` strips that filter. With it stripped, the build
