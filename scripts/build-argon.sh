@@ -23,4 +23,18 @@ for d in glob.glob(sys.argv[1] + "/*.ufo"):
 
 uvx --from fontmake fontmake -m "$out"/masters/*.designspace -o variable --output-dir "$out" >"$out/variable.log" 2>&1
 
+# The OFL requires copyright (7) and license (13) to keep the reserved names.
+uvx --from fonttools python -I -c '
+import sys
+from fontTools.ttLib import TTFont
+src, dst = sys.argv[1:]
+f = TTFont(src)
+for r in f["name"].names:
+    if r.nameID in (7, 13):
+        continue
+    r.string = r.toUnicode().replace("Monaspace Argon Var", "Argot").replace("MonaspaceArgonVar", "Argot")
+f.save(dst)
+' "$out/Monaspace Argon Var.ttf" "$out/Argot.ttf"
+rm "$out/Monaspace Argon Var.ttf"
+
 ls -la "$out"/*.ttf

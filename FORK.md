@@ -1,8 +1,8 @@
 # Why this fork exists
 
 A personal fork to give Monaspace Argon a `?`, `$`, `&` and `%` that match its
-letters. It isn't
-meant to go upstream and isn't a maintained font release.
+letters. The build is named **Argot**. It isn't meant to go upstream and isn't a
+maintained font release.
 
 ## The problem
 
@@ -134,9 +134,11 @@ the 8 masters (Light/Black × normal/Wide × upright/Italic):
 Building from each master's own glyphs keeps the masters compatible, so every
 weight, width and slant blends from them.
 
-The family is **not** renamed. Monaspace's OFL reserves the names "Monaspace",
-"Argon", "Neon", "Xenon", "Radon" and "Krypton". chrismo chose to leave the
-name alone for this personal experiment.
+The built font is named **Argot**, because Monaspace's OFL reserves the names
+"Monaspace", "Argon", "Neon", "Xenon", "Radon" and "Krypton". The rename happens
+in `build-argon.sh`, after fontmake, by rewriting the name table. The `.glyphs`
+source keeps upstream's names so merges stay clean. The copyright (name ID 7)
+and license (ID 13) entries are left as they are.
 
 ## Working on it
 
@@ -145,7 +147,7 @@ python3 -I scripts/question-from-two.py "sources/Variable Fonts/Monaspace Argon 
 python3 -I scripts/dollar-from-s.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 python3 -I scripts/ampersand-from-s.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 python3 -I scripts/percent-from-zero.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
-scripts/build-argon.sh        # -> build/Monaspace Argon Var.ttf (~40s)
+scripts/build-argon.sh        # -> build/Argot.ttf (~40s)
 ```
 
 - **Syncing upstream:** run `git fetch upstream && git merge upstream/main`. If the
@@ -163,11 +165,10 @@ scripts/build-argon.sh        # -> build/Monaspace Argon Var.ttf (~40s)
 
 ## In use (Rex, macOS)
 
-Tested 2026-11-03. Copy `build/Monaspace Argon Var.ttf` into `~/Library/Fonts`.
-It installs alongside "Monaspace Argon NF" with no clash. In Rex's Settings >
-Terminal:
+Tested 2026-11-03. Copy `build/Argot.ttf` into `~/Library/Fonts`. It installs
+alongside "Monaspace Argon NF" with no clash. In Rex's Settings > Terminal:
 
-- Typography > Terminal font: **Monaspace Argon Var**.
+- Typography > Terminal font: **Argot**.
 - Typography > Font weight: **400**. The font's default weight is 200
   (ExtraLight), so leaving this alone makes text thin.
 - Advanced Font Settings > fallback fonts: add **Monaspace Argon NF**.
