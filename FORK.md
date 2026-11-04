@@ -1,12 +1,13 @@
 # Why this fork exists
 
-A personal fork to give Monaspace Argon a `?` that matches its letters. It isn't
+A personal fork to give Monaspace Argon a `?` and a `$` that match its letters. It isn't
 meant to go upstream and isn't a maintained font release.
 
 ## The problem
 
 Argon's letters have strong details: steep stroke endings, squarish curves, slab
-serifs on `i l f r j`. Its `?` looks like a generic sans `?` next to them.
+serifs on `i l f r j`. Its `?` looks like a generic sans `?` next to them, and its
+`$` has the same problem.
 
 ### Why it doesn't fit
 
@@ -18,6 +19,8 @@ Measured from Argon NF Regular v1.400 outlines (units per em 2000):
 | `c` bottom | near-vertical cut, (1072,36)→(1087,192) |
 | `3` bottom | near-vertical cut, (155,171)→(203,-13) |
 | `?` (upstream) | **near-horizontal cut**, (129,1087)→(315,1070) |
+| `S` top / bottom (Black) | near-vertical cuts, (1076,1177)→(1064,1459) and (125,310)→(137,31) |
+| `$` (upstream, Black) | **near-horizontal cuts**, (846,1013)→(1151,1044) and (385,467)→(73,418) |
 
 Every open stroke in `2 a c s 3 5 j f r` ends in a steep cut after a sweeping
 curve. The upstream `?` curls down and ends in a near-flat cut. That mismatch is
@@ -64,7 +67,7 @@ Gathered in another session and not re-checked here:
   punctuation mark that carries Argon's own design. Redrawing `?` alone makes it
   different from the other 13. Most of those 13 are straight-line brackets and
   operators with no open curved stroke, so the stroke-ending mismatch mainly
-  applies to `?` and `$`. That makes `$` the likely next candidate.
+  applies to `?` and `$`, which is why `$` was done next.
 
 ## What was tried
 
@@ -80,12 +83,22 @@ The mockups were made on Regular only, by patching the installed OTF.
   turned down into the `?`'s own stem. **This is the one in this fork.** It gets
   the steep stroke ending and visibly belongs with Argon's digits.
 
+For `$`, the first try was Argon's own `S` with upstream's bars, and that
+worked. `S` and `$` are both 1240 wide and nearly the same height, so nothing
+had to be redrawn. The pair `$?`, common in shell, now matches.
+
 ## What changed
 
-Only the `question` glyph in `sources/Variable Fonts/Monaspace Argon Var.glyphs`.
-In each of the 8 masters (Light/Black × normal/Wide × upright/Italic), the new `?`
-is built from that master's own `2` and `?`. That keeps the masters compatible, so
-every weight, width and slant blends from them.
+Three glyphs in `sources/Variable Fonts/Monaspace Argon Var.glyphs`. In each of
+the 8 masters (Light/Black × normal/Wide × upright/Italic):
+
+- `question` is built from that master's own `2` and `?`.
+- `dollar` and `dollar.nobar` take that master's `S` in place of their own S
+  and keep their bars. Above wght 599 a feature-variation rule swaps `dollar`
+  for `dollar.nobar`, which drops the bar through the middle, so both need it.
+
+Building from each master's own glyphs keeps the masters compatible, so every
+weight, width and slant blends from them.
 
 The family is **not** renamed. Monaspace's OFL reserves the names "Monaspace",
 "Argon", "Neon", "Xenon", "Radon" and "Krypton". chrismo chose to leave the
@@ -95,13 +108,14 @@ name alone for this personal experiment.
 
 ```bash
 python3 -I scripts/question-from-two.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
+python3 -I scripts/dollar-from-s.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 scripts/build-argon.sh        # -> build/Monaspace Argon Var.ttf (~40s)
 ```
 
 - **Syncing upstream:** run `git fetch upstream && git merge upstream/main`. If the
   `.glyphs` file conflicts, take upstream's version and rerun
-  `question-from-two.py`. Only run the script on upstream's `?`: a second run
-  reshapes it again.
+  both scripts. Only run `question-from-two.py` on upstream's `?`: a second run
+  reshapes it again. `dollar-from-s.py` is safe to rerun.
 - **Building:** `fontmake` fails on the untouched source because glyphsLib's
   default `eraseOpenCorners` filter makes `softsign-cy.both` incompatible across
   masters. `build-argon.sh` strips that filter. With it stripped, the build
@@ -136,5 +150,4 @@ not this font.
 
 ## Open
 
-- `$` is probably next, for the reason in [Upstream context](#upstream-context).
 - Only the variable font is built, with no static font files.
