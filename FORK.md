@@ -44,6 +44,10 @@ Gathered in another session and not re-checked here:
 - The README lists `cv80`–`cv99` as "reserved for future use", with nothing for
   `?`. Issue #380, which asks for a `cv` for a serifed `7` (Apr 2026), is open
   with no replies.
+- As of 2026-11-03, none of the 324 forks had changed `sources/*.glyphs`. The
+  forks with their own commits change only build tooling, font metrics,
+  READMEs or install scripts. Upstream has no pull requests that change glyph
+  designs, and nobody has asked for a new `?`.
 - The README credits Heather Cran as "Lead Symbols & Punctuation" for all five
   families. The shared `?` is one deliberate drawing used across the whole
   superfamily.
