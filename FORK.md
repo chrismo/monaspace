@@ -1,13 +1,13 @@
 # Why this fork exists
 
-A personal fork to give Monaspace Argon a `?` and a `$` that match its letters. It isn't
+A personal fork to give Monaspace Argon a `?`, `$` and `&` that match its letters. It isn't
 meant to go upstream and isn't a maintained font release.
 
 ## The problem
 
 Argon's letters have strong details: steep stroke endings, squarish curves, slab
 serifs on `i l f r j`. Its `?` looks like a generic sans `?` next to them, and its
-`$` has the same problem.
+`$` and `&` have the same problem.
 
 ### Why it doesn't fit
 
@@ -21,6 +21,7 @@ Measured from Argon NF Regular v1.400 outlines (units per em 2000):
 | `?` (upstream) | **near-horizontal cut**, (129,1087)→(315,1070) |
 | `S` top / bottom (Black) | near-vertical cuts, (1076,1177)→(1064,1459) and (125,310)→(137,31) |
 | `$` (upstream, Black) | **near-horizontal cuts**, (846,1013)→(1151,1044) and (385,467)→(73,418) |
+| `&` top loop (upstream, Black) | **near-horizontal cut**, (720,1092)→(1000,1150) |
 
 Every open stroke in `2 a c s 3 5 j f r` ends in a steep cut after a sweeping
 curve. The upstream `?` curls down and ends in a near-flat cut. That mismatch is
@@ -87,15 +88,29 @@ For `$`, the first try was Argon's own `S` with upstream's bars, and that
 worked. `S` and `$` are both 1240 wide and nearly the same height, so nothing
 had to be redrawn. The pair `$?`, common in shell, now matches.
 
+For `&`, only the top loop's terminal changed. Its right arm already ends in a
+square slab. Two versions put the flat arm and steep cut from the top of `S` on
+the loop:
+
+- **A**, with the arm as long as the `S`'s: it read as Argon, but next to `?`
+  the arm looked short.
+- **B**, with the arm stretched to where the old terminal reached: **this is the
+  one in this fork.** `&?` then mirror each other, with arms of about the same
+  length opening in opposite directions.
+
 ## What changed
 
-Three glyphs in `sources/Variable Fonts/Monaspace Argon Var.glyphs`. In each of
+Eight glyphs in `sources/Variable Fonts/Monaspace Argon Var.glyphs`. In each of
 the 8 masters (Light/Black × normal/Wide × upright/Italic):
 
 - `question` is built from that master's own `2` and `?`.
 - `dollar` and `dollar.nobar` take that master's `S` in place of their own S
   and keep their bars. Above wght 599 a feature-variation rule swaps `dollar`
   for `dollar.nobar`, which drops the bar through the middle, so both need it.
+- `ampersand` and its four variants get the top arm of that master's `S` on
+  their top loop. The variants are `.left`, `.right` and `.both` for texture
+  healing, plus `.init` for the `&&` ligature in `ss06`. Texture healing picks
+  among them by context, so all five need the change.
 
 Building from each master's own glyphs keeps the masters compatible, so every
 weight, width and slant blends from them.
@@ -109,13 +124,15 @@ name alone for this personal experiment.
 ```bash
 python3 -I scripts/question-from-two.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 python3 -I scripts/dollar-from-s.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
+python3 -I scripts/ampersand-from-s.py "sources/Variable Fonts/Monaspace Argon Var.glyphs"
 scripts/build-argon.sh        # -> build/Monaspace Argon Var.ttf (~40s)
 ```
 
 - **Syncing upstream:** run `git fetch upstream && git merge upstream/main`. If the
   `.glyphs` file conflicts, take upstream's version and rerun
-  both scripts. Only run `question-from-two.py` on upstream's `?`: a second run
-  reshapes it again. `dollar-from-s.py` is safe to rerun.
+  all three scripts. Only run `question-from-two.py` on upstream's `?`: a second
+  run reshapes it again. `dollar-from-s.py` and `ampersand-from-s.py` are safe
+  to rerun.
 - **Building:** `fontmake` fails on the untouched source because glyphsLib's
   default `eraseOpenCorners` filter makes `softsign-cy.both` incompatible across
   masters. `build-argon.sh` strips that filter. With it stripped, the build
@@ -140,6 +157,11 @@ The build has 55 icons of its own in U+E000–F8FF (Powerline among them). The
 fallback supplies the remaining Nerd Font icons: Font Awesome, Devicons,
 Octicons, and Material in U+F0000+. All of these rendered when printed with
 `printf` in Rex, so there's no need to run the nerd-fonts patcher.
+
+Texture healing (the `calt` feature) works in Rex: in `imi`, the `m` widens
+into the space the `i`s leave. Stylistic sets such as `ss06`, which joins `&&`,
+aren't reachable: per-feature settings are accepted in Rex feedback but haven't
+shipped.
 
 Rex only exposes the weight axis. Ghostty-style `font-variation` is "deferred"
 in Rex feedback, so the width axis isn't reachable there.
