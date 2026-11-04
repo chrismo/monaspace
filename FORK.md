@@ -107,10 +107,30 @@ scripts/build-argon.sh        # -> build/Monaspace Argon Var.ttf (~40s)
   `docs/`, `scripts/`, `LICENSE`, `README.md`). Add paths with
   `git sparse-checkout add <path>`.
 
+## In use (Rex, macOS)
+
+Tested 2026-11-03. Copy `build/Monaspace Argon Var.ttf` into `~/Library/Fonts`.
+It installs alongside "Monaspace Argon NF" with no clash. In Rex's Settings >
+Terminal:
+
+- Typography > Terminal font: **Monaspace Argon Var**.
+- Typography > Font weight: **400**. The font's default weight is 200
+  (ExtraLight), so leaving this alone makes text thin.
+- Advanced Font Settings > fallback fonts: add **Monaspace Argon NF**.
+
+The build has 55 icons of its own in U+E000–F8FF (Powerline among them). The
+fallback supplies the remaining Nerd Font icons: Font Awesome, Devicons,
+Octicons, and Material in U+F0000+. All of these rendered when printed with
+`printf` in Rex, so there's no need to run the nerd-fonts patcher.
+
+Rex only exposes the weight axis. Ghostty-style `font-variation` is "deferred"
+in Rex feedback, so the width axis isn't reachable there.
+
+Nerd Font icons in U+E000–F8FF render blank when they're inside one of Claude
+Code's own replies, but fine in command output. That's Claude Code's display,
+not this font.
+
 ## Open
 
-- Untested in a real terminal. The family name "Monaspace Argon Var" should
-  coexist with an installed "Monaspace Argon NF", but that hasn't been checked.
-- There are no Nerd Font icons. The nerd-fonts patcher step hasn't been tried.
 - `$` is probably next, for the reason in [Upstream context](#upstream-context).
 - Only the variable font is built, with no static font files.
